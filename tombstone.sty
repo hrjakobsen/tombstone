@@ -1,0 +1,130 @@
+% this is my first package
+% 
+% (c) Mathias Steen Jakobsen
+%
+%% This program can be redistributed and/or modified under the terms
+%% of the LaTeX Project Public License Distributed from CTAN archives
+%% in directory macros/latex/base/lppl.txt.
+% 
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{tombstone}
+  [2016/02/10 v0.1 LaTeX package for drawing tombstone diagrams]
+
+\RequirePackage{tikz}
+\RequirePackage{xifthen}
+\usetikzlibrary{fit,matrix,positioning}
+
+\tikzset{
+    every fit/.style={
+        text height/.expanded=\the\pgf@y+.5\ht\pgfnodeparttextbox -.5\dp\pgfnodeparttextbox,
+    }
+}
+
+\tikzset{tmatrix/.style={
+    matrix of nodes,
+    nodes in empty cells,
+    ampersand replacement=\&,
+    column sep=\pgflinewidth, row sep=\pgflinewidth,
+    nodes={%
+      text height=#1/4+0.75ex,
+      text depth=#1/4-0.75ex,
+      text width=#1/2,
+      align=center,
+      inner sep=0pt,
+      font=\footnotesize
+    },
+  },
+  tmatrix/.default=1.4cm
+}
+
+\tikzset{drawmatrix/.style={
+    column sep=0, row sep=0,
+    nodes={
+        draw
+    }
+}
+}
+
+\newenvironment{tombstonediagram}{
+    \newcommand{\compiler}[6][]{
+        \matrix (##2) ##6 [%
+            tmatrix,
+            anchor=##2-1-1.north west,
+            ##1
+        ] {%
+            {##3} \& $\to$ \& {##4} \\
+                  \& {##5} \&       \\
+        };
+        \draw (##2-1-1.north west) -- (##2-1-3.north east) |- (##2-1-2.south east) -- (##2-2-2.south east) -- (##2-2-2.south west) -- (##2-1-1.south east) -| (##2-1-1.north west);
+    }
+    \newcommand{\program}[5][]{
+        \matrix (##2) ##5  [%
+            tmatrix,
+            anchor=##2-1-1.south east,
+            ##1
+        ]{%
+                \phantom{C}  \& \phantom{$\to$}      \&    \phantom{B}   \\
+                  \& {##4} \&       \\
+        };
+        \node[font=\footnotesize, text height=10ex,text depth=5ex,fit=(##2-1-1.north west)(##2-1-3.south east),anchor=center]{##3};
+        \draw[, bend left=90, min distance=9mm] (##2-1-1.south east) to node [auto] {} (##2-1-1.north east);
+        \draw[, bend right=90,min distance=9mm] (##2-1-3.south west) to node [auto] {} (##2-1-3.north west);
+        \draw[] (##2-1-1.north east) -- (##2-1-3.north west);
+        \draw[] (##2-1-1.south east) |- (##2-2-2.south east) -- (##2-1-2.south east);
+        \path[] (##2-1-2.north west) -- (##2-1-2.north east) -- (##2-1-2.south east) -- (##2-1-2.south west) -- (##2-1-2.north west);
+    }
+
+    \newcommand{\interpreter}[5][]{
+        \matrix (##2) ##5  [%
+            tmatrix,
+            nodes={%
+                inner ysep=-5pt,
+            },
+            anchor=##2-1-1.north west,
+            ##1
+        ] {%
+                {##3}\\
+                {##4}\\
+        };
+        \draw [] (##2-1-1.north west) -| (##2-2-1.south east) -| (##2-1-1.north west);
+    }
+
+    \newcommand{\machine}[4][]{
+        \matrix (##2) ##4 [%
+            tmatrix,
+            nodes={%
+                inner ysep=-5pt,
+            },
+            anchor=##2-1-1.north west,
+            ##1
+        ] {%
+                {##3}\\
+                {\phantom{1}}\\
+        };
+        \draw[] (##2-1-1.north west) -| (##2-1-1.south east) -- (##2-2-1.center) -- (##2-1-1.south west) -- (##2-1-1.north west);
+    }
+
+    \newcommand{\highlightmachine}[1]{
+        \fill[black, opacity=0.2] (##1-1-1.north west) -| (##1-1-1.south east) -- (##1-2-1.center) -- (##1-1-1.south west) -- (##1-1-1.north west);
+    }
+
+    \newcommand{\highlightinterpreter}[1]{
+        \fill[black, opacity=0.2] (##1-1-1.north west) -| (##1-2-1.south east) -| (##1-1-1.north west);
+    }
+
+    \newcommand{\highlightcompiler}[1]{
+        \fill[black, opacity=0.2] (##1-1-1.north west) -- (##1-1-3.north east) |- (##1-1-2.south east) -- (##1-2-2.south east) -- (##1-2-2.south west) -- (##1-1-1.south east) -| (##1-1-1.north west);
+    }
+
+    \newcommand{\highlightprogram}[1]{
+        \draw[fill=black, fill opacity=0.2, bend left=90, min distance=9mm] (##1-1-1.south east) to node [auto] {} (##1-1-1.north east);
+        \draw[fill=black, fill opacity=0.2, bend right=90,min distance=9mm] (##1-1-3.south west) to node [auto] {} (##1-1-3.north west);
+        \fill[black, opacity=0.2] (##1-1-2.north west) rectangle (##1-2-2.south east);
+    }
+
+}{%
+}
+
+\endinput
+%%
+%% End of file `tombstone.sty'.
