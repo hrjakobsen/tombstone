@@ -11,5 +11,19 @@ Simply copy the tombstone.sty file to the root directory of your projects and in
 \usepackage{tombstone}
 ```
 
+## Example
+The diagram in this readme was generated using the following code
+```latex
+\begin{tikzpicture}
+    \begin{tombstonediagram}
+        \compiler{cmp}{Java}{JVM}{JVM}{}
+        \program[anchor=prg-2-2.north east]{prg}{Tetris}{Java}{at (cmp-1-1.north west)}
+        \interpreter{int}{JVM}{x86}{at (cmp-2-2.south west)}
+        \program{prgo}{Tetris}{JVM}{at (cmp-1-3.north east)}
+        \machine{mac}{x86}{at (int-2-1.south west)}
+    \end{tombstonediagram}
+\end{tikzpicture}
+```
+
 ## Documentation
 The package is documented in the file tombstonedoc.tex. A compiled PDF version of the documentation is also included in the repository.
